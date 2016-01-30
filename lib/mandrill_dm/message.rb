@@ -219,7 +219,12 @@ module MandrillDm
     # `mail[:merge_vars].value` returns the variables pre-processed,
     # `instance_variable_get('@value')` returns them exactly as they were passed in
     def get_value(field)
-      mail[field] ? mail[field].instance_variable_get('@value') : nil
+      return nil if mail[field].nil?
+      unless mail[field].instance_variable_defined?(:@value)
+        fail 'You\'re probably using Rails 3 (Mail 2.5), please see https://github.com/spovich/mandrill_dm/wiki/Rails-3-(Mail-2.5)-support'
+      end
+
+      mail[field].instance_variable_get(:@value)
     end
 
     # Returns a Mandrill API compatible email address hash
